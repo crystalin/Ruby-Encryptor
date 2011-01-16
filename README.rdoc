@@ -8,7 +8,7 @@ In your script (replace the keys by yours):
 
   require 'encryptor'
 
-  public_key  = 'test.pub'
+  public_key = File.read('test.pub')
 
   original  = 'original.txt'
   encrypted = 'encrypted'
@@ -22,14 +22,14 @@ In your script (replace the keys and the password by yours):
 
   require 'encryptor'
 
-  private_key = 'test.pem'
-  password    = 'test'
+  private_key = File.read('test.pem')
+  password = 'test'
 
   encrypted = 'encrypted'
   decrypted = 'decrypted'
 
   # Decrypt with :
-  File.open(decrypted,'wb') {|f| f.write(Encryptor.decrypt_file(encrypted, private_key, password))}
+  File.open(decrypted,'wb') {|f| f.write(Encryptor.decrypt_data(File.read(encrypted), private_key, password))}
 
 
 ==Prepare keys

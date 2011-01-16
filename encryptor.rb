@@ -1,32 +1,29 @@
 require 'openssl'
 
-# Module to encrypt a file (Binary/Text) with public/private key and aes cipher 
+# Module to encrypt a file (Binary/Text) with public/private key and aes cipher
 #
 # Sample :
 #
-#      public_key  = 'test.pub'
-#      private_key = 'test.pem'
+#      public_key  = File.read('test.pub')
+#      private_key = File.read('test.pem')
 #      password    = 'test'
 #
-#      original  = 'original.txt'
-#      encrypted = 'encrypted'
-#      decrypted = 'decrypted'
+#      original_file  = 'original.txt'
+#      encrypted_file = 'encrypted'
+#      decrypted_file = 'decrypted'
 #
 #    # Encrypt the file with :
 #      File.open(encrypted,'wb') {|f| f.write(Encryptor.encrypt_data(File.read(original), public_key))}
 #
 #    # Decrypt with :
-#      File.open(decrypted,'wb') {|f| f.write(Encryptor.decrypt_file(encrypted, private_key, password))}
+#      File.open(decrypted,'wb') {|f| f.write(Encryptor.decrypt_file(File.read(encrypted), private_key, password))}
 
 module Encryptor
 
-  def Encryptor.encrypt_data(data, public_key_file)
+  def Encryptor.encrypt_data(data, public_key)
     begin
-      public_key = OpenSSL::PKey::RSA.new(File.read(public_key_file))
-    rescue Errno::ENOENT
-      $stderr << "Public key not found\n"
-      return
-    rescue OpenSSL::PKey::RSAError
+      public_key = OpenSSL::PKey::RSA.new(public_key)
+    rescue
       $stderr << "Provided key is incorrect\n"
       return
     end
@@ -45,11 +42,9 @@ module Encryptor
     encrypted_key << encrypted_iv << encrypted_data
   end
 
-  def Encryptor.decrypt_file(file, private_key_file, password)
+  def Encryptor.decrypt_data(data, private_key, password)
     begin
-      private_key = OpenSSL::PKey::RSA.new(File.read(private_key_file),password)
-    rescue Errno::ENOENT
-      $stderr << "Private key not found\n"
+      private_key = OpenSSL::PKey::RSA.new(private_key,password)
     rescue
       $stderr << "Private key or Password incorrect\n"
       return
@@ -58,17 +53,15 @@ module Encryptor
     cipher = OpenSSL::Cipher::Cipher.new('aes-256-cbc')
     cipher.decrypt
 
-    File.open(file, 'rb') do |f|
-      encrypted_key = f.read(256)
-      encrypted_iv = f.read(256)
+    encrypted_key = data[0..255]
+    encrypted_iv = data[256..511]
 
-      encrypted_data = f.read
+    encrypted_data = data[512..-1]
 
-      cipher.key = private_key.private_decrypt(encrypted_key)
-      cipher.iv = private_key.private_decrypt(encrypted_iv)
+    cipher.key = private_key.private_decrypt(encrypted_key)
+    cipher.iv = private_key.private_decrypt(encrypted_iv)
 
-      decrypted_data = cipher.update(encrypted_data)
-      decrypted_data << cipher.final
-    end
+    decrypted_data = cipher.update(encrypted_data)
+    decrypted_data << cipher.final
   end
 end
