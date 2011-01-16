@@ -4,7 +4,7 @@ Encryptor is intended as an easy data encryptor using public/private key.
 
 ==Quick Start
 ===To encrypt original.txt
-In your script (replace the keys and the password by yours):
+In your script (replace the keys by yours):
 
   require 'encryptor'
 
@@ -36,7 +36,7 @@ In your script (replace the keys and the password by yours):
 === Generate test.pem (private) and test.pub (public)
 Under linux shell :
 
-  >openssl genrsa -des3 -out test.pem 2048
+>openssl genrsa -des3 -out test.pem 2048
   Generating RSA private key, 2048 bit long modulus
   .....................................+++
   ..............................................................................+++
@@ -44,6 +44,6 @@ Under linux shell :
   Enter pass phrase for test.pem: <type your password>
   Verifying - Enter pass phrase for test.pem: <type your password again>
 
-  >openssl rsa -in test.pem -out test.pub -outform PEM -pubout
+>openssl rsa -in test.pem -out test.pub -outform PEM -pubout
   Enter pass phrase for test.pem: <type your password>
   writing RSA key
