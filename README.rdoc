@@ -3,10 +3,10 @@
 Encryptor is intended as an easy data encryptor using public/private RSA key and AES-256.
 
 ==Details
-Encryptor uses *AES-256* to encrypt the data using a *Random Key and IV*.
-The key and IV is encrypted with the *public RSA key* and *stored inside the encrypted data* (at the beginning)
+Encryptor uses AES-256 to encrypt the data using a Random Key and IV.
+The key and IV is encrypted with the public RSA key and stored inside the encrypted data (at the beginning)
 
-The encrypted data is longer than the original one by 512 bytes (+ extra 0-16 bytes)
+The encrypted data is longer than the original by 512 bytes (+ extra 0-16 bytes)
 
 ===Why not encode the whole data with the RSA Key ?
 
