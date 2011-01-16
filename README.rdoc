@@ -1,0 +1,49 @@
+=Ruby Encryptor
+
+Encryptor is intended as an easy data encryptor using public/private key.
+
+==Quick Start
+===To encrypt original.txt
+In your script (replace the keys and the password by yours):
+
+  require 'encryptor'
+
+  public_key  = 'test.pub'
+
+  original  = 'original.txt'
+  encrypted = 'encrypted'
+
+  # Encrypt the file with :
+  File.open(encrypted,'wb') {|f| f.write(Encryptor.encrypt_data(File.read(original), public_key))}
+
+
+===To decrypt
+In your script (replace the keys and the password by yours):
+
+  require 'encryptor'
+
+  private_key = 'test.pem'
+  password    = 'test'
+
+  encrypted = 'encrypted'
+  decrypted = 'decrypted'
+
+  # Decrypt with :
+  File.open(decrypted,'wb') {|f| f.write(Encryptor.decrypt_file(encrypted, private_key, password))}
+
+
+==Prepare keys
+=== Generate test.pem (private) and test.pub (public)
+Under linux shell :
+
+  >openssl genrsa -des3 -out test.pem 2048
+  Generating RSA private key, 2048 bit long modulus
+  .....................................+++
+  ..............................................................................+++
+  e is 65537 (0x10001)
+  Enter pass phrase for test.pem: <type your password>
+  Verifying - Enter pass phrase for test.pem: <type your password again>
+
+  >openssl rsa -in test.pem -out test.pub -outform PEM -pubout
+  Enter pass phrase for test.pem: <type your password>
+  writing RSA key
