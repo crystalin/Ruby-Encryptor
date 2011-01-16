@@ -1,6 +1,17 @@
 =Ruby Encryptor
 
-Encryptor is intended as an easy data encryptor using public/private key.
+Encryptor is intended as an easy data encryptor using public/private RSA key and AES-256.
+
+==Details
+Encryptor uses *AES-256* to encrypt the data using a *Random Key and IV*.
+The key and IV is encrypted with the *public RSA key* and *stored inside the encrypted data* (at the beginning)
+
+The encrypted data is longer than the original one by 512 bytes (+ extra 0-16 bytes)
+
+===Why not encode the whole data with the RSA Key ?
+
+RSA Encryption is degigned for short messages (perfect for AES-256 Key) but can't encrypt long message.
+It would be incredibly too slow if it was possible.
 
 ==Quick Start
 ===To encrypt original.txt
@@ -8,13 +19,14 @@ In your script (replace the keys by yours):
 
   require 'encryptor'
 
-  public_key = File.read('test.pub')
+  public_key     = File.read('test.pub')
+  data           = 'Ceci est un message secret'
 
-  original  = 'original.txt'
-  encrypted = 'encrypted'
+  # Encrypt data with :
+  encrypted = Encryptor.encrypt_data(data, public_key)
 
-  # Encrypt the file with :
-  File.open(encrypted,'wb') {|f| f.write(Encryptor.encrypt_data(File.read(original), public_key))}
+  # Save it to be decrypted later :
+  File.open('encrypted,'wb') {|f| f.write(encrypted)}
 
 
 ===To decrypt
@@ -22,17 +34,18 @@ In your script (replace the keys and the password by yours):
 
   require 'encryptor'
 
-  private_key = File.read('test.pem')
-  password = 'test'
-
-  encrypted = 'encrypted'
-  decrypted = 'decrypted'
+  encrypted     = File.read('encrypted')
+  private_key   = File.read('test.pem')
+  password      = 'test'
 
   # Decrypt with :
-  File.open(decrypted,'wb') {|f| f.write(Encryptor.decrypt_data(File.read(encrypted), private_key, password))}
+  decrypted = Encryptor.decrypt_data(encrypted, private_key, password)
+
+  puts decrypted
+  # Should display : 'Ceci est un message secret'
 
 
-==Prepare keys
+==Prepare RSA keys
 === Generate test.pem (private) and test.pub (public)
 Under linux shell :
 
